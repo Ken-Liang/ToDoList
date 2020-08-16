@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">to_do_list</string>
+
+    <string-array name="tag">
+        <item>Homework</item>
+        <item>Quiz/PPT</item>
+        <item>Midterm</item>
+        <item>Final</item>
+        <item>Misc</item>
+    </string-array>
+
+    <string-array name="course">
+        <item>CPEN 211</item>
+        <item>CPEN 221</item>
+        <item>CPEN 281</item>
+        <item>MATH 220</item>
+        <item>MATH 253</item>
+    </string-array>
+
+</resources>
