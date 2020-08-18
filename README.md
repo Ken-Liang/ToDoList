@@ -19,3 +19,4 @@ Having low exposure with the creation of Mobile Applications, I decided to use A
 
 
 # Potential Improvements
+- Add SQL database and implement the adding of tasks.
