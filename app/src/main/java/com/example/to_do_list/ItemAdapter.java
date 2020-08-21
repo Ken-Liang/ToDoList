@@ -58,10 +58,9 @@ public class ItemAdapter extends BaseAdapter{
 
 /*      Beginning to further implement the display of dates.
 
+        ViewHolder holder;
 
-         ViewHolder holder;
-
-         if(view == null){
+        if(view == null){
              view = mInflater.inflate(R.layout.list_view_format, viewGroup, false);
              holder = new ViewHolder();
              view.setTag(holder);

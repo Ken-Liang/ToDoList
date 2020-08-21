@@ -1,11 +1,15 @@
 package com.example.to_do_list;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,15 +19,37 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 
 public class Pop extends Activity {
 
+    //Creating private constants to connect to the SQL database
+    //Fields that are empty are for the user to fill in and kept empty for security reasons.
+    private static String ip = "";
+    private static String port = "";
+    private static String classes = "net.sourceforge.jtds.jdbc.Driver";
+    private static String database = "toDoList";
+    private static String username = "";
+    private static String password = "";
+    private static String url = "jdbc:jtds:sqlserver://" + ip +":"+ port + "/" + database;
+
+    private Date retrievedDate;
+    private Connection connection = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET},
+                PackageManager.PERMISSION_GRANTED);
 
         setContentView(R.layout.pop_up_form);
 
@@ -56,7 +82,7 @@ public class Pop extends Activity {
         tags.setAdapter(spinner_tag);
 
 
-        //Cancel Button
+        //Cancel Button Initialization
 
         Button cancel_button = (Button) findViewById(R.id.button_to_cancel);
 
@@ -67,7 +93,7 @@ public class Pop extends Activity {
             }
         });
 
-        //Calendar Button Initiation
+        //Calendar Button Initialization
 
         final TextView calendar_popupText = (TextView) findViewById(R.id.dateField);
 
@@ -88,7 +114,10 @@ public class Pop extends Activity {
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                calendar_popupText.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                                retrievedDate = java.sql.Date.valueOf(((year)
+                                        + "-" + (monthOfYear +1) + "-" + (dayOfMonth)));
+                                calendar_popupText.setText
+                                        (dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
                             }
                         }, year, month, day);
 
@@ -97,24 +126,50 @@ public class Pop extends Activity {
             }
         });
 
-        //Title Initiation
+        //Title EditText box Initiation
 
         final EditText title = (EditText) findViewById(R.id.titleEditText);
 
 
         //Confirm Button Initialization
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        try{
+            Class.forName(classes);
+            connection = DriverManager.getConnection(url, username, password);
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("error here");
+        }
+
         Button confirm_button = (Button) findViewById(R.id.button_to_confirm);
 
         confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Task newTask = new Task((Date) calendar_popupText.getText(),
+                Task newTask = new Task(retrievedDate,
                         (String) tags.getSelectedItem().toString(),
                         (String) title.getText().toString(),
                         (String) courses.getSelectedItem().toString());
+
+                if(connection != null){
+                    Statement statement = null;
+
+                    try{
+                        statement = connection.createStatement();
+                        statement.executeQuery("INSERT INTO VALUES_TABLE " +
+                                "(dates, tag, course, title) VALUES ('" +
+                                newTask.getDate().toString() + "', '" +
+                                newTask.getTag() + "', '" + newTask.getCourse() +"', '" +
+                                newTask.getTitle() + "');");
+
+                        } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+                startActivity(new Intent(Pop.this,MainActivity.class));
             }
         });
-
     }
 }

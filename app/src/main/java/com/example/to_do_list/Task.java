@@ -15,7 +15,6 @@ public class Task {
 
     public Task(){
         long current = System.currentTimeMillis();
-
         this.tag = "";
         this.course = "";
         this.title = "";
@@ -34,30 +33,19 @@ public class Task {
         task.date = newDate;
     }
 
-    public Date getDate(Task task){
-        return task.date;
+    public Date getDate(){
+        return this.date;
     }
 
-    public String getTag(Task task){
-        return task.tag;
+    public String getTag(){
+        return this.tag;
     }
 
-    public String getCourse(Task task){
-        return task.course;
+    public String getCourse(){
+        return this.course;
     }
 
-    public String getTitle(Task task){
-        return task.title;
+    public String getTitle(){
+        return this.title;
     }
-
-
-
-
-
-
-
-
-
-
-
 }
